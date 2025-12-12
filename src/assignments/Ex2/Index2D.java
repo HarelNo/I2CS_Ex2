@@ -9,7 +9,12 @@ public class Index2D implements Pixel2D {
         _y = h;
     }
     public Index2D(Pixel2D other) {
-
+        this._x = other.getX();
+        this._y = other.getY();
+    }
+    public  Index2D(){
+        _x = 0;
+        _y = 0;
     }
     @Override
     public int getX() {
@@ -36,7 +41,7 @@ public class Index2D implements Pixel2D {
 
     @Override
     public boolean equals(Object p) {
-        boolean ans = true;
+        boolean ans = false;
             if (this == p) //if they point to the same object
                 return true;
             if (!(p instanceof Index2D)) //if p is not an Index2D its always false

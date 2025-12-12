@@ -8,8 +8,8 @@ import java.io.Serializable;
  *
  */
 public class Map implements Map2D, Serializable{
-
     // edit this class below
+    private int[][] _map;
 	/**
 	 * Constructs a w*h 2D raster map with an init value v.
 	 * @param w
@@ -21,7 +21,7 @@ public class Map implements Map2D, Serializable{
 	 * Constructs a square map (size*size).
 	 * @param size
 	 */
-	public Map(int size) {this(size,size, 0);}
+	public Map(int size,int v) {this(size,size, v);}
 	
 	/**
 	 * Constructs a map from a given 2D array.
@@ -32,11 +32,21 @@ public class Map implements Map2D, Serializable{
 	}
 	@Override
 	public void init(int w, int h, int v) {
-
+        _map = new int[w][h];
+        for (int i = 0; i < _map.length; i++){
+            for (int j = 0; j < _map[w].length; j++){
+                _map[i][j] = v;
+            }
+        }
 	}
 	@Override
 	public void init(int[][] arr) {
-
+        if (validMap(arr)){
+            _map = new int[arr.length][arr[0].length];
+            for (int i = 0; i < _map.length; i++)
+                 for (int j = 0; j < _map[i].length; j++)
+                     _map[i][j] = arr[i][j];
+            }
 	}
 	@Override
 	public int[][] getMap() {
@@ -153,6 +163,21 @@ public class Map implements Map2D, Serializable{
         Map2D ans = null;  // the result.
 
         return ans;
+    }
+    public static boolean validMap(int[][] map){
+        try{
+            int temp = map[0].length;
+            for (int i = 1; i < map.length; i++){ //1x3 maps are allowed and in those cases the array cant be unequal in lengths
+                if ((temp == 0)||(map[i].length == 0))
+                    throw new RuntimeException("Array length is 0");
+                if (map[i].length != temp)
+                    throw new RuntimeException("Array length is inconsistent (map is not a rectangle)");
+            }
+            return true;
+        }
+        catch (NullPointerException error){
+            throw new RuntimeException("Map contains an empty array");
+        }
     }
 	////////////////////// Private Methods ///////////////////////
 
