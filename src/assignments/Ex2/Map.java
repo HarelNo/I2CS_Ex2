@@ -50,65 +50,76 @@ public class Map implements Map2D, Serializable{
 	}
 	@Override
 	public int[][] getMap() {
-		int[][] ans = null;
-
-		return ans;
+		return this._map;
 	}
 	@Override
 	public int getWidth() {
-        int ans = -1;
-
-        return ans;
+        validMap(this._map);
+        return this._map.length;
     }
 	@Override
 	public int getHeight() {
-        int ans = -1;
-
-        return ans;
+        validMap(this._map);
+        return this._map[0].length;
     }
 	@Override
 	public int getPixel(int x, int y) {
-        int ans = -1;
-
-        return ans;
+        try{
+            return this._map[x][y];
+        }catch (NullPointerException error){
+            throw new RuntimeException("The provided pixel is out of the map's scope");
+        }
     }
 	@Override
 	public int getPixel(Pixel2D p) {
-        int ans = -1;
-
-        return ans;
+        return getPixel(p.getX(),p.getY());
 	}
 	@Override
 	public void setPixel(int x, int y, int v) {
-
+        validMap(this._map);
+        try {
+            this._map[x][y] = v;
+        }catch (NullPointerException error) {
+            throw new RuntimeException("The provided pixel is out of the map's scope");
+        }
     }
 	@Override
 	public void setPixel(Pixel2D p, int v) {
-
+        this.setPixel(p.getX(),p.getY(),v);
 	}
 
     @Override
     public boolean isInside(Pixel2D p) {
-        boolean ans = true;
-
-        return ans;
+        try {
+            int temp = this._map[p.getX()][p.getY()];
+        }catch (NullPointerException error){
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean sameDimensions(Map2D p) {
-        boolean ans = false;
-
-        return ans;
+        validMap(this._map);
+        validMap(p.getMap());
+        return (this._map.length == p.getMap().length) && (this._map[0].length == p.getMap()[0].length);
     }
 
     @Override
     public void addMap2D(Map2D p) {
-
+        if (this.sameDimensions(p)){
+            for (int i = 0; i < _map.length; i++)
+                for (int j = 0; j < _map[i].length; j++)
+                    this._map[i][j] += p.getMap()[i][j];
+        }
     }
 
     @Override
     public void mul(double scalar) {
-
+        int mul = (int)scalar;
+        for (int i = 0; i < _map.length; i++)
+            for (int j = 0; j < _map[i].length; j++)
+                this._map[i][j] *= mul;
     }
 
     @Override
