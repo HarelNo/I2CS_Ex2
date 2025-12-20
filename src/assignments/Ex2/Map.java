@@ -175,14 +175,31 @@ public class Map implements Map2D, Serializable{
 
     @Override
     public void drawRect(Pixel2D p1, Pixel2D p2, int color) {
-
+        int x1 = Math.min(p1.getX(), p2.getX());
+        int y1 = Math.min(p1.getY(), p2.getY());
+        int x2 = Math.max(p1.getX(), p2.getX());
+        int y2 = Math.max(p1.getY(), p2.getY());
+        for (int i = x1; i <= x2; i++){
+            for (int j = y1; j <= y2; j++){
+                _map[i][j] = color;
+            }
+        }
     }
 
     @Override
     public boolean equals(Object ob) {
-        boolean ans = false;
-
-        return ans;
+        if (ob.getClass() == this.getClass()){
+            if ((this.getWidth() != ((Map) ob).getWidth())&&(this.getHeight() != (((Map)ob).getWidth())))
+                return false; //not the same dimensions
+            for (int i = 0; i <= _map.length; i++) {
+                for (int j = 0; j <= _map[0].length; j++) {
+                    if (((Map) ob)._map[i][j] != this._map[i][j])
+                        return false; //not the same values
+                }
+            }
+            return true;
+        }
+        return false; //not the same class
     }
 	@Override
 	/** 
