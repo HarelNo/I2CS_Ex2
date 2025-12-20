@@ -100,8 +100,6 @@ public class Map implements Map2D, Serializable{
 
     @Override
     public boolean sameDimensions(Map2D p) {
-        validMap(this._map);
-        validMap(p.getMap());
         return (this._map.length == p.getMap().length) && (this._map[0].length == p.getMap()[0].length);
     }
 
@@ -124,17 +122,55 @@ public class Map implements Map2D, Serializable{
 
     @Override
     public void rescale(double sx, double sy) {
-
+        int newW = (int)(sx*this.getWidth());
+        int newH = (int)(sy*this.getHeight());
+        int [][] New = new int[newW][newH];
+        for (int i = 0; i < newW; i++){
+            for (int j = 0; j < newH; j++){
+                New[i][j] = _map[(int)(i/sx)][(int)(j/sy)];
+            }
+        }
+        _map = New;
     }
 
     @Override
     public void drawCircle(Pixel2D center, double rad, int color) {
-
+        for (int i = 0; i < _map.length; i++) {
+            for (int j = 0; j < _map[0].length; j++) {
+                Index2D temp = new Index2D(i,j);
+                if (temp.distance2D(center)<rad)
+                    _map[i][j] = color;
+            }
+        }
     }
 
     @Override
     public void drawLine(Pixel2D p1, Pixel2D p2, int color) {
+        int x = p1.getX();
+        int y = p1.getY();
+        int stepX = -1;
+        int stepY = -1;
+        if (x<p2.getX())
+            stepX = 1;
+        if (y<p2.getY())
+            stepY = 1;
+        int dx = p2.getX() - x;
+        int dy = -1*(p2.getY() - y);
+        int error = dx+dy;
 
+        while ((x != p2.getX())&&(y != p2.getY())){
+            _map[x][y] = color;
+            int error2 = 2*error;
+            if (error2 >= dy){
+                error += dy;
+                x += stepX;
+            }
+            if (error2 <= dx){
+                error += dx;
+                y += stepY;
+            }
+        }
+        _map[p2.getX()][p2.getY()] = color;
     }
 
     @Override
