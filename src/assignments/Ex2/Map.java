@@ -288,12 +288,84 @@ public class Map implements Map2D, Serializable{
 		return ans;
 	}
     @Override
-    public Map2D allDistance(Pixel2D start, int obsColor, boolean cyclic) {
-        Map2D ans = null;  // the result.
-
-        return ans;
+    public Map2D allDistance(Pixel2D start, int obsColor, boolean cyclic) { //in here I assume the starting pixel does not start at an obstacle
+        int[][] pathMap = this.getMap();
+        for (int i = 0; i < pathMap.length; i++) {
+            for (int j = 0; j < pathMap[0].length; j++) {
+                if (pathMap[i][j] == obsColor)
+                    pathMap[i][j] = -1;
+                else
+                    pathMap[i][j] = -2;
+            } //making a new empty map with -1 representing obstacles
+        }
+            Queue<Pixel2D> queue = new LinkedList<Pixel2D>();
+            queue.add(start);
+            pathMap[start.getX()][start.getY()] = 0;
+            while (queue.peek() != null){
+                if (queue.peek().getX() != 0){
+                    if (pathMap[queue.peek().getX()-1][queue.peek().getY()] == -2){
+                        Pixel2D temp = new Index2D(queue.peek().getX()-1,queue.peek().getY());
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                } else if (cyclic) {
+                    if (pathMap[pathMap.length-1][queue.peek().getY()] == -2){
+                        Pixel2D temp = new Index2D(pathMap.length-1,queue.peek().getY());
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                }
+                if (queue.peek().getX() != pathMap.length-1){
+                    if (pathMap[queue.peek().getX()+1][queue.peek().getY()] == -2){
+                        Pixel2D temp = new Index2D(queue.peek().getX()+1,queue.peek().getY());
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                } else if (cyclic) {
+                    if (pathMap[0][queue.peek().getY()] == -2){
+                        Pixel2D temp = new Index2D(0,queue.peek().getY());
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                }
+                if (queue.peek().getY() != 0){
+                    if (pathMap[queue.peek().getX()][queue.peek().getY()-1] == -2){
+                        Pixel2D temp = new Index2D(queue.peek().getX(),queue.peek().getY()-1);
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                } else if (cyclic) {
+                    if (pathMap[queue.peek().getX()][pathMap[0].length-1] == -2){
+                        Pixel2D temp = new Index2D(queue.peek().getX(),pathMap[0].length-1);
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                }
+                if (queue.peek().getY() != pathMap[0].length-1){
+                    if (pathMap[queue.peek().getX()][queue.peek().getY()+1] == -2){
+                        Pixel2D temp = new Index2D(queue.peek().getX(),queue.peek().getY()+1);
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                } else if (cyclic) {
+                    if (pathMap[queue.peek().getX()][0] == -2){
+                        Pixel2D temp = new Index2D(queue.peek().getX(),0);
+                        pathMap[temp.getX()][temp.getY()] = pathMap[queue.peek().getX()][queue.peek().getY()]+1;
+                        queue.add(temp);
+                    }
+                }
+                queue.remove();
+            }
+        for (int i = 0; i < pathMap.length; i++) {
+            for (int j = 0; j < pathMap[0].length; j++) {
+                if (pathMap[i][j] == -2)
+                    pathMap[i][j] = -1;
+            }
+        }
+        return new Map(pathMap);
     }
-    public static boolean validMap(int[][] map){
+	////////////////////// Private Methods ///////////////////////
+    private static boolean validMap(int[][] map){
         try{
             int temp = map[0].length;
             for (int i = 1; i < map.length; i++){ //1x3 maps are allowed and in those cases the array cant be unequal in lengths
@@ -308,6 +380,5 @@ public class Map implements Map2D, Serializable{
             throw new RuntimeException("Map contains an empty array");
         }
     }
-	////////////////////// Private Methods ///////////////////////
 
 }
