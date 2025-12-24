@@ -1,5 +1,8 @@
 package assignments.Ex2;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * This class represents a 2D map (int[w][h]) as a "screen" or a raster matrix or maze over integers.
  * This is the main class needed to be implemented.
@@ -145,7 +148,7 @@ public class Map implements Map2D, Serializable{
     }
 
     @Override
-    public void drawLine(Pixel2D p1, Pixel2D p2, int color) {
+    public void drawLine(Pixel2D p1, Pixel2D p2, int newColor) {
         int x = p1.getX();
         int y = p1.getY();
         int stepX = -1;
@@ -159,7 +162,7 @@ public class Map implements Map2D, Serializable{
         int error = dx+dy;
 
         while ((x != p2.getX())&&(y != p2.getY())){
-            _map[x][y] = color;
+            _map[x][y] = newColor;
             int error2 = 2*error;
             if (error2 >= dy){
                 error += dy;
@@ -170,18 +173,18 @@ public class Map implements Map2D, Serializable{
                 y += stepY;
             }
         }
-        _map[p2.getX()][p2.getY()] = color;
+        _map[p2.getX()][p2.getY()] = newColor;
     }
 
     @Override
-    public void drawRect(Pixel2D p1, Pixel2D p2, int color) {
+    public void drawRect(Pixel2D p1, Pixel2D p2, int newColor) {
         int x1 = Math.min(p1.getX(), p2.getX());
         int y1 = Math.min(p1.getY(), p2.getY());
         int x2 = Math.max(p1.getX(), p2.getX());
         int y2 = Math.max(p1.getY(), p2.getY());
         for (int i = x1; i <= x2; i++){
             for (int j = y1; j <= y2; j++){
-                _map[i][j] = color;
+                _map[i][j] = newColor;
             }
         }
     }
@@ -206,10 +209,72 @@ public class Map implements Map2D, Serializable{
 	 * Fills this map with the new color (new_v) starting from p.
 	 * https://en.wikipedia.org/wiki/Flood_fill
 	 */
-	public int fill(Pixel2D xy, int new_v,  boolean cyclic) {
-		int ans = -1;
-
-		return ans;
+	public int fill(Pixel2D xy, int new_v,  boolean cyclic) { //for this I assume connected means 4 cardinal directions and not 8 (diagonals)
+		int ans = 0;
+        int oldColor = this._map[xy.getX()][xy.getY()];
+        if (oldColor == new_v)
+            return 0;
+        Queue<Pixel2D> queue = new LinkedList<Pixel2D>();
+        Pixel2D start = new Index2D(xy);
+        this._map[start.getX()][start.getY()] = new_v;
+        queue.add(start);
+        while (queue.peek() != null){
+            ans++;
+            if (queue.peek().getX() != 0){
+                if (this._map[queue.peek().getX()-1][queue.peek().getY()] == oldColor){
+                    Pixel2D temp = new Index2D(queue.peek().getX()-1,queue.peek().getY());
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            } else if (cyclic) {
+                if (this._map[this._map.length-1][queue.peek().getY()] == oldColor){
+                    Pixel2D temp = new Index2D(this._map.length-1,queue.peek().getY());
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            }
+            if (queue.peek().getX() != this._map.length-1){
+                if (this._map[queue.peek().getX()+1][queue.peek().getY()] == oldColor){
+                    Pixel2D temp = new Index2D(queue.peek().getX()+1,queue.peek().getY());
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            } else if (cyclic) {
+                if (this._map[0][queue.peek().getY()] == oldColor){
+                    Pixel2D temp = new Index2D(0,queue.peek().getY());
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            }
+            if (queue.peek().getY() != 0){
+                if (this._map[queue.peek().getX()][queue.peek().getY()-1] == oldColor){
+                    Pixel2D temp = new Index2D(queue.peek().getX(),queue.peek().getY()-1);
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            } else if (cyclic) {
+                if (this._map[queue.peek().getX()][this._map[0].length-1] == oldColor){
+                    Pixel2D temp = new Index2D(queue.peek().getX(),this._map[0].length-1);
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            }
+            if (queue.peek().getY() != this._map[0].length-1){
+                if (this._map[queue.peek().getX()][queue.peek().getY()+1] == oldColor){
+                    Pixel2D temp = new Index2D(queue.peek().getX(),queue.peek().getY()+1);
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            } else if (cyclic) {
+                if (this._map[queue.peek().getX()][0] == oldColor){
+                    Pixel2D temp = new Index2D(queue.peek().getX(),0);
+                    this._map[temp.getX()][temp.getY()] = new_v;
+                    queue.add(temp);
+                }
+            }
+            queue.remove();
+        }
+        return ans;
 	}
 
 	@Override
