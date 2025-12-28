@@ -34,6 +34,13 @@ public class Map implements Map2D, Serializable{
 	public Map(int[][] data) {
 		init(data);
 	}
+
+    /**
+     * This function initializes _map and fills its value with the parameter v.
+     * @param w the width of the underlying 2D array.
+     * @param h the height of the underlying 2D array.
+     * @param v the init value of all the entries in the 2D array.
+     */
 	@Override
 	public void init(int w, int h, int v) {
         _map = new int[w][h];
@@ -43,6 +50,12 @@ public class Map implements Map2D, Serializable{
             }
         }
 	}
+
+    /**
+     * This function checks if the 2D array can be used as a map and if able, initializes the _map value with a deep copt of arr
+     * If the parameter arr cannot be used as a map the function will throw a RuntimeException error.
+     * @param arr a 2D int array.
+     */
 	@Override
 	public void init(int[][] arr) {
         if (validMap(arr)){
@@ -52,20 +65,40 @@ public class Map implements Map2D, Serializable{
                      _map[i][j] = arr[i][j];
             }
 	}
+
+    /**
+     * Simple get function retuning the _map value as a 2D integer array.
+     * @return the map represented as a 2D array.
+     */
 	@Override
 	public int[][] getMap() {
 		return this._map;
 	}
+
+    /**
+     * Simple function that returns the Width of the map (being represented by the X axis).
+     * @return int representing the width of the map.
+     */
 	@Override
 	public int getWidth() {
-        validMap(this._map);
         return this._map.length;
     }
+
+    /**
+     * Simple function that returns the Height of the map (being represented by the Y axis).
+     * @return int representing the height of the map.
+     */
 	@Override
 	public int getHeight() {
-        validMap(this._map);
         return this._map[0].length;
     }
+
+    /**
+     * This functions returns the int value at the given coordinate on the map represented by its x and y values ([x][y).
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return int value at a specific coordinate in the map.
+     */
 	@Override
 	public int getPixel(int x, int y) {
         try{
@@ -74,10 +107,23 @@ public class Map implements Map2D, Serializable{
             throw new RuntimeException("The provided pixel is out of the map's scope");
         }
     }
+
+    /**
+     * This function returns the int value at the given coordinate on the map  represented by a pixel containing its x and y values ([x][y])
+     * @param p the x,y coordinate
+     * @return int value at a specific coordinate in the map.
+     */
 	@Override
 	public int getPixel(Pixel2D p) {
         return getPixel(p.getX(),p.getY());
 	}
+
+    /**
+     * This function changes the color of a specific coordinate represented by x and y to the value v.
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param v the value that the entry at the coordinate [x][y] is set to.
+     */
 	@Override
 	public void setPixel(int x, int y, int v) {
         validMap(this._map);
@@ -87,11 +133,22 @@ public class Map implements Map2D, Serializable{
             throw new RuntimeException("The provided pixel is out of the map's scope");
         }
     }
+
+    /**
+     * This function changes the color of a specific coordinate represented by a pixel to the value v.
+     * @param p the coordinate in the map.
+     * @param v the value that the entry at the coordinate [p.x][p.y] is set to.
+     */
 	@Override
 	public void setPixel(Pixel2D p, int v) {
         this.setPixel(p.getX(),p.getY(),v);
 	}
 
+    /**
+     * This function returns true if the given pixel's coordinates are withing the map.
+     * @param p the 2D coordinate.
+     * @return true if the pixel is in the map and false if not.
+     */
     @Override
     public boolean isInside(Pixel2D p) {
         try {
@@ -102,11 +159,21 @@ public class Map implements Map2D, Serializable{
         return true;
     }
 
+    /**
+     * This function returns true if the dimensions of the Map2D are identical to the dimension of the map p.
+     * @param p
+     * @return
+     */
     @Override
     public boolean sameDimensions(Map2D p) {
         return (this._map.length == p.getMap().length) && (this._map[0].length == p.getMap()[0].length);
     }
 
+    /**
+     * This function adds the int value of p to the map if p has the same dimensions as the map.
+     * If not this function does nothing.
+     * @param p - the map that should be added to this map (just in case they have the same dimensions).
+     */
     @Override
     public void addMap2D(Map2D p) {
         if (this.sameDimensions(p)){
@@ -116,6 +183,10 @@ public class Map implements Map2D, Serializable{
         }
     }
 
+    /**
+     * This function multiplies every single pixel's value with a given scalar
+     * @param scalar
+     */
     @Override
     public void mul(double scalar) {
         int mul = (int)scalar;
@@ -124,6 +195,11 @@ public class Map implements Map2D, Serializable{
                 this._map[i][j] *= mul;
     }
 
+    /**
+     * This function rescales the map using a multiplier for the x-axis (sx) and a multiplier for the y-axis (xy).
+     * @param sx
+     * @param sy
+     */
     @Override
     public void rescale(double sx, double sy) {
         int newW = (int)(sx*this.getWidth());
@@ -137,6 +213,13 @@ public class Map implements Map2D, Serializable{
         _map = New;
     }
 
+    /**
+     * this function draws a circle on the map around a given point with a given radius.
+     * Currently inefficient as it scans the whole map for each circle.
+     * @param center
+     * @param rad
+     * @param color - the (new) color to be used in the drawing.
+     */
     @Override
     public void drawCircle(Pixel2D center, double rad, int color) {
         for (int i = 0; i < _map.length; i++) {
@@ -148,6 +231,13 @@ public class Map implements Map2D, Serializable{
         }
     }
 
+    /**
+     * This function draws a line between two given coordinates with a given color represented as an int value.
+     * I used the Bresenham's Line Algorithm. (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
+     * @param p1
+     * @param p2
+     * @param newColor - the (new) color to be used in the drawing.
+     */
     @Override
     public void drawLine(Pixel2D p1, Pixel2D p2, int newColor) {
         int x = p1.getX();
@@ -177,6 +267,13 @@ public class Map implements Map2D, Serializable{
         _map[p2.getX()][p2.getY()] = newColor;
     }
 
+    /**
+     * This function draws a rectangle with two given pixels as the limiting corners.
+     * The function first creates the lowest and highest corner (minimum x and y values) and then draws a rectangle limited by those to cover all positioning cases)
+     * @param p1
+     * @param p2
+     * @param newColor - the (new) color to be used in the drawing.
+     */
     @Override
     public void drawRect(Pixel2D p1, Pixel2D p2, int newColor) {
         int x1 = Math.min(p1.getX(), p2.getX());
@@ -190,6 +287,14 @@ public class Map implements Map2D, Serializable{
         }
     }
 
+    /**
+     * This function returns True if the given object is identical to the Map2D.
+     * step 1) Check if the Object is a Map2D.
+     * step 2) Check if the Map2D (formerly Object) has the same dimensions as the original Map2D.
+     * step 3) Check if every single pixel in the map is identical to its counterpart.
+     * @param ob the reference object with which to compare.
+     * @return true or false
+     */
     @Override
     public boolean equals(Object ob) {
         if (ob.getClass() == this.getClass()){
@@ -208,7 +313,12 @@ public class Map implements Map2D, Serializable{
 	@Override
 	/** 
 	 * Fills this map with the new color (new_v) starting from p.
+     * This functions uses the queue method given in the wiki page.
 	 * https://en.wikipedia.org/wiki/Flood_fill
+     *
+     * the queue takes the starting point, colors it and then checks for its neighbors for pixels sharing the same color.
+     * once it finds such neighbors it adds them to the queue.
+     * then it repeats the process for each pixel in the queue until there are no more pixels connected with the same color.
 	 */
 	public int fill(Pixel2D xy, int new_v,  boolean cyclic) { //for this I assume connected means 4 cardinal directions and not 8 (diagonals)
 		int ans = 0;
@@ -280,6 +390,7 @@ public class Map implements Map2D, Serializable{
 
 	@Override
 	/**
+     * This function uses a map generated by the allDistance function, then finds a path by following ever decreasing numbers until it reaches the starting point while documenting its path.
 	 * BFS like shortest the computation based on iterative raster implementation of BFS, see:
 	 * https://en.wikipedia.org/wiki/Breadth-first_search
 	 */
@@ -355,6 +466,17 @@ public class Map implements Map2D, Serializable{
         }
 		return ans;
 	}
+
+    /**
+     * This function draws a map containing only obstacles
+     * and then uses an algorithm identical to the fill function except instead of filling with a specific color
+     * it fills each tile with its distance to the starting position (how many steps the algorithm took to get to said pixel).
+     * Then the function returns the newly drawn map with -1 representing unreachable pixels and obstacles and a number representing the number of steps it took to get to the pixel from the start.
+     * @param start the source (starting) point
+     * @param obsColor the color representing obstacles
+     * @param cyclic
+     * @return
+     */
     @Override
     public Map2D allDistance(Pixel2D start, int obsColor, boolean cyclic) { //in here I assume the starting pixel does not start at an obstacle
         int[][] pathMap = this.getMap();
@@ -433,6 +555,13 @@ public class Map implements Map2D, Serializable{
         return new Map(pathMap);
     }
 	////////////////////// Private Methods ///////////////////////
+    /**
+     * This function checks if a given 2D array can be used as a map with 2 criteria:
+     * 1) the width and height have to be at least 1.
+     * 2) all rows have to be the same length and all columns have to be the same length
+     * @param map
+     * @return true if the 2D array is valid to be a map.
+     */
     private static boolean validMap(int[][] map){
         try{
             int temp = map[0].length;
