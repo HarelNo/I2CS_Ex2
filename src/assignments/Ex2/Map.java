@@ -2,6 +2,7 @@ package assignments.Ex2;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 /**
  * This class represents a 2D map (int[w][h]) as a "screen" or a raster matrix or maze over integers.
@@ -283,8 +284,75 @@ public class Map implements Map2D, Serializable{
 	 * https://en.wikipedia.org/wiki/Breadth-first_search
 	 */
 	public Pixel2D[] shortestPath(Pixel2D p1, Pixel2D p2, int obsColor, boolean cyclic) {
-		Pixel2D[] ans = null;  // the result.
-
+        int[][] pathMap = this.allDistance(p1, obsColor, cyclic).getMap();
+        if (pathMap[p1.getX()][p1.getY()] == -1)
+            return null;
+        int p = pathMap[p2.getX()][p2.getY()]+1;
+        Pixel2D temp = new Index2D(p2);
+        Pixel2D[] ans = new Pixel2D[p];
+        ans[p-1] = new Index2D(p2);
+        while (ans[0] == null){
+            if (temp.getX() != 0){
+                if (pathMap[temp.getX()-1][temp.getY()] == pathMap[temp.getX()][temp.getY()]-1){
+                    ans[p-1] = new Index2D(temp.getX()-1, temp.getY());
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            } else if (cyclic) {
+                if (pathMap[pathMap.length-1][temp.getY()] == pathMap[temp.getX()][temp.getY()]-1){
+                    ans[p-1] = new Index2D(pathMap.length-1, temp.getY());
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            }
+            if (temp.getX() != pathMap.length-1){
+                if (pathMap[temp.getX()+1][temp.getY()] == pathMap[temp.getX()][temp.getY()]-1) {
+                    ans[p-1] = new Index2D(temp.getX() + 1, temp.getY());
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            } else if (cyclic) {
+                if (pathMap[0][temp.getY()] == pathMap[temp.getX()][temp.getY()]-1){
+                    ans[p-1] = new Index2D(0, temp.getY());
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            }
+            if (temp.getY() != 0){
+                if (pathMap[temp.getX()][temp.getY()-1] == pathMap[temp.getX()][temp.getY()]-1) {
+                    ans[p-1] = new Index2D(temp.getX(),temp.getY()-1);
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            } else if (cyclic) {
+                if (pathMap[temp.getX()][pathMap[0].length-1] == pathMap[temp.getX()][temp.getY()]-1){
+                    ans[p-1] = new Index2D(temp.getX(),pathMap[0].length-1);
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            }
+            if (temp.getY() != pathMap[0].length-1){
+                if (pathMap[temp.getX()][temp.getY()+1] == pathMap[temp.getX()][temp.getY()]-1){
+                    ans[p-1] = new Index2D(temp.getX(),temp.getY()+1);
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            } else if (cyclic) {
+                if (pathMap[temp.getX()][0] == pathMap[temp.getX()][temp.getY()]-1){
+                    ans[p-1] = new Index2D(temp.getX(),0);
+                    p--;
+                    temp = ans[p-1];
+                    continue;
+                }
+            }
+        }
 		return ans;
 	}
     @Override
